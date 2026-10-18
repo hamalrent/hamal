@@ -10,6 +10,10 @@ if (catalogEnd < 0) throw new Error('Service catalog not found in script.js');
 const context = {};
 vm.runInNewContext(`${source.slice(0, catalogEnd)}\nthis.catalog=categoryData;`, context);
 const catalog = context.catalog;
+// Landing pages reuse the Google Analytics ID from index.html, so it only needs changing there.
+const gaMatch = fs.readFileSync(path.join(root, 'index.html'), 'utf8').match(/gtag\('config','(G-[A-Z0-9]+)'\)/);
+if (!gaMatch) throw new Error('Google Analytics ID not found in index.html');
+const gaId = gaMatch[1];
 
 const locales = {
   ru: {index:0,locale:'ru',region:'Кишинёв и Молдова',serviceIn:'Услуга в Кишинёве и Молдове',quote:'Узнать стоимость',call:'Позвонить',services:'Все услуги',what:'Что сообщить для расчёта',whatIntro:'Эти детали помогут подобрать подходящее решение и обсудить стоимость.',how:'Как получить предложение',step1:'Опишите задачу',step1Text:'Расскажите об услуге и важных деталях.',step2:'Уточним условия',step2Text:'Обсудим объём работ, маршрут и удобное время.',step3:'Согласуем стоимость',step3Text:'Стоимость и условия согласуем до начала работ.',formTitle:'Коротко о задаче',formHint:'Например: адреса, объём, этаж и удобная дата',send:'Продолжить в WhatsApp',note:'WhatsApp откроется с подготовленным сообщением. Проверьте его и нажмите «Отправить».',waText:'Здравствуйте! Интересует услуга',detailsLabel:'Детали',phone:'Телефон',brand:'Двигаем важное в Кишинёве и по Молдове.',groups:{moves:{lead:'Расскажите об адресах, объёме вещей и условиях подъёма. Подберём транспорт и команду для вашего переезда.',hints:['Адреса погрузки и разгрузки','Примерный объём вещей','Этажи и наличие лифта']},transport:{lead:'Опишите груз и маршрут. Подберём транспорт с учётом размеров, веса и условий погрузки.',hints:['Что и сколько нужно перевезти','Маршрут и расстояние','Вес, размеры и этажи']},loaders:{lead:'Опишите объём и место работ. Уточним состав команды и условия погрузки или подъёма.',hints:['Какие предметы или материалы','Примерный вес и количество','Этаж, лифт и доступ к объекту']},waste:{lead:'Расскажите о виде и объёме отходов. Уточним транспорт, погрузку и условия вывоза.',hints:['Вид отходов','Примерный объём','Адрес, этаж и подъезд']},equipment:{lead:'Опишите задачу и параметры груза. Уточним, какая техника нужна и когда её использовать.',hints:['Тип груза или работ','Вес и габариты','Адрес и нужная дата']},extras:{lead:'Расскажите, какая помощь нужна с вещами или помещением. Уточним объём работ и предложим решение.',hints:['Что нужно сделать','Количество вещей или объём работ','Адрес и удобная дата']}}},
@@ -63,6 +67,8 @@ for(const {group,item,slug} of entries){
   <meta name="bingbot" content="noindex,follow" />
   <meta name="description" content="${escapeHtml(description)}" />
   <title>${escapeHtml(title)}</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${gaId}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');</script>
   <link rel="icon" type="image/svg+xml" href="../../logo-mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -7,6 +7,8 @@ const rows = fs.readFileSync(path.join(root, 'ads', 'keyword-map.csv'), 'utf8').
 const urls = new Set();
 const counts = {ru:0, ro:0, mo:0, en:0};
 const escapeHtml = value => value.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const gaConfig = fs.readFileSync(path.join(root, 'index.html'), 'utf8').match(/gtag\('config','G-[A-Z0-9]+'\)/);
+assert.ok(gaConfig, 'Missing Google Analytics tag in index.html');
 
 for (const row of rows) {
   const match = row.match(/^"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"$/);
@@ -26,6 +28,7 @@ for (const row of rows) {
   assert.ok(html.includes('tel:+37360300789'), `Missing phone: ${url}`);
   assert.ok(html.includes('name="googlebot" content="noindex,follow"'), `Missing search index rule: ${url}`);
   assert.ok(!html.includes('name="AdsBot-Google" content="noindex"'), `AdsBot blocked: ${url}`);
+  assert.ok(html.includes(gaConfig[0]), `Missing or outdated Google Analytics tag: ${url}`);
   for (const asset of ['../../logo-mark.svg', '../../landing.css', '../../landing.js']) {
     assert.ok(fs.existsSync(path.resolve(path.dirname(filename), asset)), `Missing asset ${asset} from ${url}`);
   }
