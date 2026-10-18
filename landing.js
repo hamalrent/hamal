@@ -6,4 +6,7 @@ const detailsLabel=body.dataset.detailsLabel;
 const track=(method,placement)=>gtag('event',`click_${method}`,{contact_method:method,placement,service,site_language:language});
 document.getElementById('languageSwitch').addEventListener('change',event=>window.location.assign(event.target.value));
 document.addEventListener('click',event=>{const link=event.target.closest('a[data-method]');if(link)track(link.dataset.method,link.dataset.placement)});
+const showPhones=focused=>document.querySelectorAll('.phone-reveal').forEach(button=>{const link=document.createElement('a');link.href='tel:+37360300789';link.textContent='+373 60 300 789';link.dataset.method='phone';link.dataset.placement=button.dataset.placement;button.replaceWith(link);if(button===focused)link.focus()});
+document.addEventListener('click',event=>{const button=event.target.closest('.phone-reveal');if(!button)return;gtag('event','show_phone',{contact_method:'phone',placement:button.dataset.placement,service,site_language:language});showPhones(button)});
+if(matchMedia('(hover: none)').matches)showPhones();
 document.getElementById('leadForm').addEventListener('submit',event=>{event.preventDefault();const details=document.getElementById('details');if(!details.reportValidity())return;const text=`${messageIntro} ${service}.\n${detailsLabel}: ${details.value.trim()}`;track('whatsapp','form');window.location.assign(`https://wa.me/37360300789?text=${encodeURIComponent(text)}`)});

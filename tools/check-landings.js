@@ -29,6 +29,7 @@ for (const row of rows) {
   assert.ok(html.includes('name="googlebot" content="noindex,follow"'), `Missing search index rule: ${url}`);
   assert.ok(!html.includes('name="AdsBot-Google" content="noindex"'), `AdsBot blocked: ${url}`);
   assert.ok(html.includes(gaConfig[0]), `Missing or outdated Google Analytics tag: ${url}`);
+  assert.ok(!/>\+373 60 300 789</.test(html), `Phone number shown without reveal: ${url}`);
   for (const asset of ['../../logo-mark.svg', '../../landing.css', '../../landing.js']) {
     assert.ok(fs.existsSync(path.resolve(path.dirname(filename), asset)), `Missing asset ${asset} from ${url}`);
   }
